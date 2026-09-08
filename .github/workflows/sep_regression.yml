@@ -21,9 +21,9 @@ jobs:
 
     env:
       CI: true
-      SEP_QA_URL: ${{ secrets.SEP_QA_URL }}
-      SEP_USERNAME: ${{ secrets.SEP_USERNAME }}
-      SEP_PASSWORD: ${{ secrets.SEP_PASSWORD }}
+      SEP_QA_URL: ${{ secrets.SEP_QA_URL || 'https://qa.sep.tdtm.cydeo.com/taws' }}
+      SEP_USERNAME: ${{ secrets.SEP_USERNAME || 'automation-user' }}
+      SEP_PASSWORD: ${{ secrets.SEP_PASSWORD || '123abc' }}
 
     steps:
       - name: Checkout repository
@@ -39,7 +39,7 @@ jobs:
         run: npm ci
 
       - name: Install Playwright browsers and system dependencies
-        run: npx playwright install --with-deps chrome
+        run: npx playwright install --with-deps
 
       - name: Run Playwright regression tests
         run: npx playwright test

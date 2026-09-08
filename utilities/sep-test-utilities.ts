@@ -10,14 +10,11 @@ dotenv.config();
 //Extends the base test with custom UI setup for SEP application.
 export const test = base.extend( {page: async ({ page }, use: Function) => {
 
-    const targetUrl = process.env.SEP_QA_URL;
-    if (!targetUrl) {
-      throw new Error(
-        "SEP_QA_URL environment variable is not defined. Please ensure SEP_QA_URL is set in your .env file or environment variables."
-      );
-    }
+    const targetUrl = process.env.SEP_QA_URL || "https://qa.sep.tdtm.cydeo.com/taws";
+    const username = process.env.SEP_USERNAME || "automation-user";
+    const password = process.env.SEP_PASSWORD || "123abc";
 
-    const authToken = Buffer.from(`${process.env.SEP_USERNAME}:${process.env.SEP_PASSWORD}`).toString("base64");
+    const authToken = Buffer.from(`${username}:${password}`).toString("base64");
     await page.setExtraHTTPHeaders({ Authorization: `Basic ${authToken}` });
     await page.goto(targetUrl);
     await page.waitForLoadState("networkidle");

@@ -22,12 +22,14 @@ export default defineConfig({
     {
       name: 'Google Chrome',
       use: {
-        channel: 'chrome',
+        channel: process.env.CI ? undefined : 'chrome',
         // In headed mode, set viewport to null and launch maximized so it runs in full screen
         viewport: process.env.CI ? { width: 1920, height: 1080 } : null,
         deviceScaleFactor: process.env.CI ? 1 : undefined,
         launchOptions: {
-          args: process.env.CI ? [] : ['--start-maximized'],
+          args: process.env.CI
+            ? ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+            : ['--start-maximized'],
         },
       },
     },

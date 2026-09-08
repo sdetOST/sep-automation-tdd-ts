@@ -1,15 +1,25 @@
 import { Page, test as base, expect } from "@playwright/test";
+import dotenv from "dotenv";
 import { BasePage } from "../pages/BasePage";
 import { StartApplicationPage } from "../pages/StartApplicationPage";
 import { PaymentPlanPage } from "../pages/PaymentPlanPage";
 import { ReviewPaymentPage } from "../pages/ReviewPaymentPage";
 
+dotenv.config();
+
 //Extends the base test with custom UI setup for SEP application.
 export const test = base.extend( {page: async ({ page }, use: Function) => {
 
+    const targetUrl = process.env.SEP_QA_URL;
+    if (!targetUrl) {
+      throw new Error(
+        "SEP_QA_URL environment variable is not defined. Please ensure SEP_QA_URL is set in your .env file or environment variables."
+      );
+    }
+
     const authToken = Buffer.from(`${process.env.SEP_USERNAME}:${process.env.SEP_PASSWORD}`).toString("base64");
     await page.setExtraHTTPHeaders({ Authorization: `Basic ${authToken}` });
-    await page.goto(process.env.SEP_QA_URL as string);
+    await page.goto(targetUrl);
     await page.waitForLoadState("networkidle");
     expect(await page.title()).toBe("Checkout | Cydeo");
 

@@ -1,4 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
+import dotenv from 'dotenv';
+import path from 'path';
+
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 export default defineConfig({
   testDir: './tests',
@@ -18,9 +22,13 @@ export default defineConfig({
     {
       name: 'Google Chrome',
       use: {
-        ...devices['Desktop Chrome'], 
         channel: 'chrome',
-        viewport: { width: 1800, height: 1000 }, // simulate max window
+        // In headed mode, set viewport to null and launch maximized so it runs in full screen
+        viewport: process.env.CI ? { width: 1920, height: 1080 } : null,
+        deviceScaleFactor: process.env.CI ? 1 : undefined,
+        launchOptions: {
+          args: process.env.CI ? [] : ['--start-maximized'],
+        },
       },
     },
 /*

@@ -10,7 +10,7 @@ export default defineConfig({
   use: {
     baseURL: "",
     trace: 'on-first-retry',
-    headless: false,
+    headless: process.env.CI ? true : false,
   },
 
   projects: [

@@ -1,0 +1,53 @@
+name: SEP Regression Tests
+
+on:
+  # Triggers on push to any branch
+  push:
+    branches:
+      - '**'
+  # Runs every day at a scheduled off-peak time (02:45 AM UTC)
+  # Note: GitHub Actions uses UTC and requires a static cron schedule.
+  # An off-peak, non-zero minute is used to avoid server queue delays.
+  schedule:
+    - cron: '45 2 * * *'
+  # Allows manual execution from the GitHub Actions tab
+  workflow_dispatch:
+
+jobs:
+  regression-tests:
+    name: Run Regression Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    env:
+      CI: true
+      SEP_QA_URL: ${{ secrets.SEP_QA_URL }}
+      SEP_USERNAME: ${{ secrets.SEP_USERNAME }}
+      SEP_PASSWORD: ${{ secrets.SEP_PASSWORD }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers and system dependencies
+        run: npx playwright install --with-deps chrome
+
+      - name: Run Playwright regression tests
+        run: npx playwright test
+
+      - name: Upload Playwright Test Report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-regression-report
+          path: playwright-report/
+          retention-days: 30

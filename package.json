@@ -4,6 +4,8 @@
   "main": "index.js",
   "scripts": {
     "tests": "npx playwright test",
+    "test:regression": "npx playwright test",
+    "test:smoke": "npx playwright test --grep @smoke",
     "test:specific": "npx playwright test --grep file-name.spec.ts",
     "test:tag": "npx playwright test --grep @tagName",
     "report": "npx playwright show-report"
